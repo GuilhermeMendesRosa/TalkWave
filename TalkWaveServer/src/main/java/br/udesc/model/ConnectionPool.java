@@ -16,20 +16,33 @@ public class ConnectionPool {
         this.users = new TreeSet<User>();
         while (true) {
             Socket clientSocket = server.accept();
-            System.out.println("Cliente conectado: " + clientSocket);
-            var saida = new Scanner(clientSocket.getInputStream());
+            new Thread(() -> {
 
-            while (saida.hasNextLine()) {
-                System.out.println(saida.nextLine());
-            }
+                System.out.println("Cliente conectado: " + clientSocket);
+                Scanner entrada = null;
+                try {
+                    entrada = new Scanner(clientSocket.getInputStream());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
-            saida.close();
-            server.close();
-            clientSocket.close();
+                String userName = entrada.nextLine();
+
+                this.users.add(new User(userName, clientSocket));
+                System.out.println(userName);
+                System.out.println(this.users.size());
+                while(true) {
+                    if (entrada.hasNextLine()) {
+                        System.out.printf("Mensagem de %s: %s%n", userName, entrada.nextLine());
+                    }
+                }
+            }).start();
         }
     }
 
-    public void connect(String userName) throws IOException {
+    public static void main(String[] args) throws IOException {
+        ConnectionPool connectionPool = new ConnectionPool();
+        connectionPool.startServer(8080);
     }
 
 }
