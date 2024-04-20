@@ -1,6 +1,9 @@
 package br.udesc.model;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -31,9 +34,18 @@ public class ConnectionPool {
                 this.users.add(new User(userName, clientSocket));
                 System.out.println(userName);
                 System.out.println(this.users.size());
-                while(true) {
+                while (true) {
                     if (entrada.hasNextLine()) {
-                        System.out.printf("Mensagem de %s: %s%n", userName, entrada.nextLine());
+                        Message message = new Gson().fromJson(entrada.nextLine(), Message.class);
+                        User recipient = this.users.stream().filter(u -> u.getName().equals(message.getRecipient())).findFirst().get();
+                        Socket recipientSocket = recipient.getSocket();
+                        try {
+                            var saida = new PrintStream(recipientSocket.getOutputStream());
+                            saida.printf("Mensagem de %s: %s%n", userName, entrada.nextLine());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
                     }
                 }
             }).start();

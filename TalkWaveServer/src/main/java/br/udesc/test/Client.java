@@ -1,5 +1,8 @@
 package br.udesc.test;
 
+import br.udesc.model.Message;
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -16,9 +19,17 @@ public class Client {
             saida.println(userName);
 
             while (true) {
-                System.out.print("Digite uma mensagem: ");
-                String message = teclado.nextLine();
-                saida.println(message);
+                System.out.print("Digite um usuário para mandar uma mensagem:");
+                String recipient = teclado.nextLine();
+
+                System.out.print("Digite uma mensagem:");
+                String content = teclado.nextLine();
+
+                Message message = new Message(userName, recipient, content);
+
+                String json = new Gson().toJson(message);
+
+                saida.println(json);
             }
 
 //            saida.close();
