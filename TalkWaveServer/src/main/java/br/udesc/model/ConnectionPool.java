@@ -17,7 +17,7 @@ public class ConnectionPool {
     public void startServer(int port) throws IOException {
         this.server = new ServerSocket(port);
         this.users = new TreeSet<User>();
-        acceptSockets();
+        this.acceptSockets();
     }
 
     private void acceptSockets() throws IOException {
@@ -25,27 +25,27 @@ public class ConnectionPool {
             Socket clientSocket = server.accept();
             Thread receiveThread = new Thread(() -> {
                 System.out.println("Cliente conectado: " + clientSocket);
-                Scanner entrada = null;
+                Scanner input = null;
                 try {
-                    entrada = new Scanner(clientSocket.getInputStream());
+                    input = new Scanner(clientSocket.getInputStream());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
 
-                String userName = entrada.nextLine();
+                String userName = input.nextLine();
                 this.users.add(new User(userName, clientSocket));
 
                 while (true) {
-                    if (!entrada.hasNextLine()) {
+                    if (!input.hasNextLine()) {
                         continue;
                     }
 
-                    Message message = new Gson().fromJson(entrada.nextLine(), Message.class);
+                    Message message = new Gson().fromJson(input.nextLine(), Message.class);
                     User recipient = this.users.stream().filter(u -> u.getName().equals(message.getRecipient())).findFirst().get();
                     Socket recipientSocket = recipient.getSocket();
                     try {
                         PrintStream saida = new PrintStream(recipientSocket.getOutputStream());
-                        saida.printf("Mensagem de %s: %s%n", userName, entrada.nextLine());
+                        saida.printf("Mensagem de %s: %s%n", userName, input.nextLine());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
