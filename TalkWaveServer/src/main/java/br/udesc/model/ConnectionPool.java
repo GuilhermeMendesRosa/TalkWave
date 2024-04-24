@@ -33,11 +33,7 @@ public class ConnectionPool {
 
                     Scanner input = new Scanner(clientSocket.getInputStream());
 
-                    while (true) {
-                        if (!input.hasNextLine()) {
-                            continue;
-                        }
-
+                    while (input.hasNextLine()) {
                         if (first) {
                             first = false;
                             userName = input.nextLine();
@@ -52,7 +48,7 @@ public class ConnectionPool {
                         Message message = new Gson().fromJson(jsonMessage, Message.class);
                         User recipient = this.users.stream().filter(u -> u.getName().equals(message.getRecipient())).findFirst().get();
                         PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
-                        output.printf(jsonMessage);
+                        output.println(jsonMessage);
                     }
 
                 } catch (Exception e) {
