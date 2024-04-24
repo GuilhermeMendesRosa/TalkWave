@@ -14,13 +14,18 @@ public class Receive {
         PrintStream saida = new PrintStream(cliente.getOutputStream());
         Scanner teclado = new Scanner(System.in);
 
+        System.out.print("username: ");
         String username = teclado.nextLine();
         saida.println(username);
 
         new Thread(() -> {
             while (true) {
+                System.out.print("recipient: ");
                 String recipient = teclado.nextLine();
+
+                System.out.print("content: ");
                 String content = teclado.nextLine();
+
                 Message message = new Message(username, recipient, content);
                 String json = new Gson().toJson(message);
                 saida.println(json);
@@ -35,17 +40,14 @@ public class Receive {
                         continue;
                     }
 
-                    String str = input.nextLine();
-                    System.out.println(str);
+                    String json = input.nextLine();
+
+                    Message message = new Gson().fromJson(json, Message.class);
+                    System.out.println("\n" + message.getSender() + ": " + message.getContent());
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).start();
-
-
-//            saida.close();
-//            teclado.close();
-//            cliente.close();
     }
 }
