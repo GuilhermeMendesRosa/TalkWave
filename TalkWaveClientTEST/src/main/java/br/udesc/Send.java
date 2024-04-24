@@ -1,12 +1,15 @@
-package asaas.sdk;
+package br.udesc;
 
+
+import br.udesc.model.Message;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client {
+public class Send {
     public static void main(String[] args) throws IOException {
         Scanner teclado = new Scanner(System.in);
         System.out.print("Digite o seu nome de usuário: ");
@@ -17,9 +20,13 @@ public class Client {
         saida.println(userName);
 
         while (true) {
-            System.out.print("Digite uma mensagem: ");
-            String message = teclado.nextLine();
-            saida.println(message);
+            System.out.print("Destinatário: ");
+            String recipient = teclado.nextLine();
+
+            System.out.print("Conteúdo: ");
+            String content = teclado.nextLine();
+            Message message = new Message(userName, recipient, content);
+            saida.println(new Gson().toJson(message));
         }
 
 //            saida.close();
