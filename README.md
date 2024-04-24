@@ -4,4 +4,4 @@ O TalkWave é um aplicativo de mensagens desenvolvido em Java que permite comuni
 
 ## Tecnologias Utilizadas
 - ☕ Java
-- 🌐 Sockets em Java
+- 🌐 Sockets
