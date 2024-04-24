@@ -32,7 +32,7 @@ public class Server {
             threadPool.execute(() -> {
                 try {
                     Scanner input = new Scanner(clientSocket.getInputStream());
-                    this.registerUser(input, clientSocket);
+                    this.registerUser(input.nextLine(), clientSocket);
 
                     while (input.hasNextLine()) {
                         this.processMessage(input);
@@ -44,8 +44,7 @@ public class Server {
         }
     }
 
-    private void registerUser(Scanner input, Socket clientSocket) {
-        String userName = input.nextLine();
+    private void registerUser(String userName, Socket clientSocket) {
         this.users.add(new User(userName, clientSocket));
         System.out.println("Usuário conectado: " + userName + " - Socket: " + clientSocket);
     }
