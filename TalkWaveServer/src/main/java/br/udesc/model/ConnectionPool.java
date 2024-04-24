@@ -28,20 +28,33 @@ public class ConnectionPool {
             Socket clientSocket = server.accept();
             threadPool.execute(() -> {
                 try {
+                    boolean first = true;
+                    String userName = null;
+
                     Scanner input = new Scanner(clientSocket.getInputStream());
 
-                    String userName = null;
-                    userName = input.nextLine();
-                    this.users.add(new User(userName, clientSocket));
-                    System.out.println("Usuário conectado: " + userName + "- Socket: " + clientSocket);
+                    while (true) {
+                        if (!input.hasNextLine()) {
+                            continue;
+                        }
 
-                    while (input.hasNextLine()) {
-                        Message message = new Gson().fromJson(input.nextLine(), Message.class);
+                        if (first) {
+                            first = false;
+                            userName = input.nextLine();
+                            this.users.add(new User(userName, clientSocket));
+                            System.out.println("Usuário conectado: " + userName + " - Socket: " + clientSocket);
+
+                            continue;
+                        }
+
+                        String jsonMessage = input.nextLine();
+
+                        Message message = new Gson().fromJson(jsonMessage, Message.class);
                         User recipient = this.users.stream().filter(u -> u.getName().equals(message.getRecipient())).findFirst().get();
-                        Socket recipientSocket = recipient.getSocket();
-                        PrintStream saida = new PrintStream(recipientSocket.getOutputStream());
-                        saida.printf("Mensagem de %s: %s%n", userName, input.nextLine());
+                        PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
+                        output.printf(jsonMessage);
                     }
+
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
