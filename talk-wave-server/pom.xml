@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>talk-wave</groupId>
-    <artifactId>TalkWaveServer</artifactId>
+    <artifactId>talk-wave-server</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

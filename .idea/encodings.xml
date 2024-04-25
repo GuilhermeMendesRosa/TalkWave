@@ -3,8 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/TalkWaveClientTEST/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/TalkWaveClientTEST/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/TalkWaveServer/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/TalkWaveServer/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/talk-wave-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/talk-wave-server/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/talk-wave-client/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/talk-wave-client/src/main/resources" charset="UTF-8" />
   </component>
