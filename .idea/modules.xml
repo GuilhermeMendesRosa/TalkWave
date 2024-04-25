@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/TalkWave.iml" filepath="$PROJECT_DIR$/.idea/TalkWave.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TalkWaveServer/TalkWaveServer.iml" filepath="$PROJECT_DIR$/TalkWaveServer/TalkWaveServer.iml" />
     </modules>
   </component>
 </project>
