@@ -7,9 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="talk-wave-client" />
-        <module name="TalkWaveClientTEST" />
         <module name="TalkWaveServer" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="TalkWaveClientTEST" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
