@@ -1,0 +1,3 @@
+[submodule "talk-wave-client"]
+	path = talk-wave-client
+	url = https://github.com/GuilhermeMendesRosa/talk-wave-client
