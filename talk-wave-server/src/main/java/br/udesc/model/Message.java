@@ -2,16 +2,28 @@ package br.udesc.model;
 
 import br.udesc.enums.Command;
 
+import java.util.List;
+
 public class Message {
 
     private String sender;
-    private String recipient;
+    private List<String> recipients;
     private String content;
     private Command command;
 
-    public Message(String sender, String recipient, String content, Command command) {
+    public Message(String sender, Command command) {
         this.sender = sender;
-        this.recipient = recipient;
+        this.command = command;
+    }
+
+    public Message(String sender, List<String> recipients, Command command) {
+        this.sender = sender;
+        this.recipients = recipients;
+        this.command = command;
+    }
+    public Message(String sender, List<String> recipients, String content, Command command) {
+        this.sender = sender;
+        this.recipients = recipients;
         this.content = content;
         this.command = command;
     }
@@ -24,12 +36,12 @@ public class Message {
         this.sender = sender;
     }
 
-    public String getRecipient() {
-        return recipient;
+    public List<String> getRecipients() {
+        return recipients;
     }
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
+    public void setRecipients(List<String> recipients) {
+        this.recipients = recipients;
     }
 
     public String getContent() {

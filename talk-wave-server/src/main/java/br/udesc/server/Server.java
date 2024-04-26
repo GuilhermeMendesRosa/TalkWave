@@ -67,11 +67,23 @@ public class Server {
     }
 
     private void sendMessage(Message message) throws IOException {
-        System.out.println(MessageFormat.format("MENSAGEM DE {0} PARA {1}", message.getSender(), message.getRecipient()));
-        User recipient = this.findUser(message.getRecipient());
-        PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
-        String jsonMessage = new Gson().toJson(message);
-        output.println(jsonMessage);
+        List<String> recipientNames = message.getRecipients();
+        List<User> recipients = recipientNames.stream().map(this::findUser).toList();
+        recipients.forEach(user -> {
+            System.out.println(MessageFormat.format("MENSAGEM DE {0} PARA {1}", message.getSender(), user.getName()));
+        });
+
+        recipients.forEach(user -> {
+            this.threadPool.execute(() -> {
+                try {
+                    PrintStream output = new PrintStream(user.getSocket().getOutputStream());
+                    String jsonMessage = new Gson().toJson(message);
+                    output.println(jsonMessage);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
     }
 
     private User findUser(String userName) {
@@ -82,8 +94,8 @@ public class Server {
     }
 
     private void listUsers(Message messageToProcess) throws IOException {
-        User recipient = this.findUser(messageToProcess.getRecipient());
-        System.out.println("LISTANDO USUÁRIO PARA -> " + messageToProcess.getRecipient());
+        User recipient = this.findUser(messageToProcess.getRecipients().get(0));
+        System.out.println("LISTANDO USUÁRIO PARA -> " + recipient.getName());
 
         List<String> list = this.users
                 .stream()
@@ -91,7 +103,7 @@ public class Server {
                 .toList();
         String jsonList = new Gson().toJson(list);
 
-        Message messageToSend = new Message("", recipient.getName(), jsonList, Command.USERS);
+        Message messageToSend = new Message("", Collections.singletonList(recipient.getName()), jsonList, Command.USERS);
         String jsonMessage = new Gson().toJson(messageToSend);
         PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
         output.println(jsonMessage);
