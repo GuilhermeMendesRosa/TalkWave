@@ -61,6 +61,7 @@ public class Server {
 
         List<Message> messages = this.messagesStorage.get(key);
 
+        System.out.println("-----------------------------");
         messages.stream()
                 .sorted(Comparator.comparing(Message::getSendDate))
                 .forEach(message -> System.out.println(message.getSender() + ": " + message.getContent()));
@@ -118,6 +119,8 @@ public class Server {
             recipients = this.users.stream()
                     .filter(user -> !user.equals(this.findUser(message.getSender())))
                     .toList();
+
+            message.setRecipients(recipients.stream().map(User::getName).toList());
         } else {
             recipients = recipientNames.stream().map(this::findUser).toList();
         }
@@ -211,7 +214,7 @@ public class Server {
     }
 
     private void startAuditMode() {
-        new Thread(new AuditMode(this)).start();
+        new Thread(new Auditor(this)).start();
     }
 
 }

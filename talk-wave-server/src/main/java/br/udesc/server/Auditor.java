@@ -5,12 +5,12 @@ import br.udesc.model.User;
 import java.util.List;
 import java.util.Scanner;
 
-public class AuditMode implements Runnable {
+public class Auditor implements Runnable {
 
     private final Server server;
     private Scanner scanner;
 
-    public AuditMode(Server server) {
+    public Auditor(Server server) {
         this.server = server;
     }
 
@@ -36,6 +36,7 @@ public class AuditMode implements Runnable {
                     2 - Listar Usuários
                     3 - Banir Usuário
                     4 - Sair
+                    --------------------------
                     """);
             ;
 
@@ -63,7 +64,6 @@ public class AuditMode implements Runnable {
         for (User user : users) {
             System.out.println("----------Usuários----------");
             System.out.println(user.getName());
-            System.out.println("----------------------------");
         }
     }
 
