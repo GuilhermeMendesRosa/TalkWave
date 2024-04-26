@@ -1,6 +1,7 @@
 package br.udesc.server;
 
 import br.udesc.enums.Command;
+import br.udesc.model.Key;
 import br.udesc.model.Message;
 import br.udesc.model.User;
 import com.google.gson.Gson;
@@ -19,11 +20,14 @@ public class Server {
     private volatile ServerSocket server;
     private Set<User> users;
     private ExecutorService threadPool;
+    public Map<Key, List<Message>> messagesStorage;
 
     public void startServer(int port) throws IOException {
         System.out.println("SERVIDOR INICIANDO");
         this.server = new ServerSocket(port);
         this.users = Collections.synchronizedSet(new TreeSet<>());
+        this.messagesStorage = Collections.synchronizedMap(new HashMap<Key, List<Message>>());
+
         this.startAuditMode();
         this.acceptConnections();
     }
@@ -38,7 +42,29 @@ public class Server {
         this.removeUser(user);
     }
 
+    public void listChats() {
+        System.out.println("----------Conversas---------");
+        this.messagesStorage.forEach((key, message) -> {
+            System.out.println(key.getFirst().getName() + " - " + key.getSecond().getName());
+        });
+    }
 
+    public void auditChat(String userName1, String userName2) {
+        User user1 = this.findUser(userName1);
+        User user2 = this.findUser(userName2);
+
+        Key key = new Key(user1, user2);
+
+        if (!this.messagesStorage.containsKey(key)) {
+            return;
+        }
+
+        List<Message> messages = this.messagesStorage.get(key);
+
+        messages.stream()
+                .sorted(Comparator.comparing(Message::getSendDate))
+                .forEach(message -> System.out.println(message.getSender() + ": " + message.getContent()));
+    }
 
     private void removeUser(User userToRemove) throws IOException {
         userToRemove.getSocket().close();
@@ -96,21 +122,40 @@ public class Server {
             recipients = recipientNames.stream().map(this::findUser).toList();
         }
 
-        for (User user : recipients) {
-            if (user == null) {
+        this.storeMessage(message);
+        for (User recipient : recipients) {
+            if (recipient == null) {
                 continue;
             }
 
-            System.out.println(MessageFormat.format("MENSAGEM DE {0} PARA {1}", message.getSender(), user.getName()));
+            System.out.println(MessageFormat.format("MENSAGEM DE {0} PARA {1}", message.getSender(), recipient.getName()));
             this.threadPool.execute(() -> {
                 try {
-                    PrintStream output = new PrintStream(user.getSocket().getOutputStream());
+                    PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
                     String jsonMessage = new Gson().toJson(message);
                     output.println(jsonMessage);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
+        }
+    }
+
+    private void storeMessage(Message message) {
+        message.setSendDate(new Date());
+        User sender = this.findUser(message.getSender());
+        for (String recipientName : message.getRecipients()) {
+            User recipient = this.findUser(recipientName);
+            Key key = new Key(sender, recipient);
+
+            if (this.messagesStorage.containsKey(key)) {
+                List<Message> messages = new ArrayList<>(this.messagesStorage.get(key));
+                messages.add(message);
+                this.messagesStorage.put(key, messages);
+            } else {
+                List<Message> list = List.of(message);
+                this.messagesStorage.put(key, list);
+            }
         }
     }
 
@@ -168,4 +213,5 @@ public class Server {
     private void startAuditMode() {
         new Thread(new AuditMode(this)).start();
     }
+
 }

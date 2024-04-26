@@ -2,6 +2,7 @@ package br.udesc.model;
 
 import br.udesc.enums.Command;
 
+import java.util.Date;
 import java.util.List;
 
 public class Message {
@@ -10,6 +11,7 @@ public class Message {
     private List<String> recipients;
     private String content;
     private Command command;
+    private Date sendDate;
 
     public Message(String sender, Command command) {
         this.sender = sender;
@@ -59,4 +61,13 @@ public class Message {
     public void setCommand(Command command) {
         this.command = command;
     }
+
+    public Date getSendDate() {
+        return sendDate;
+    }
+
+    public void setSendDate(Date sendDate) {
+        this.sendDate = sendDate;
+    }
+
 }

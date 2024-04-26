@@ -35,6 +35,7 @@ public class AuditMode implements Runnable {
                     1 - Auditar Mensagens
                     2 - Listar Usuários
                     3 - Banir Usuário
+                    4 - Sair
                     """);
             ;
 
@@ -42,13 +43,16 @@ public class AuditMode implements Runnable {
 
             switch (option.trim()) {
                 case "1" -> {
-
+                    this.auditMessages();
                 }
                 case "2" -> {
                     this.showUsers();
                 }
                 case "3" -> {
                     this.showBanUser();
+                }
+                case "4" -> {
+                    return;
                 }
             }
         }
@@ -71,6 +75,17 @@ public class AuditMode implements Runnable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void auditMessages() {
+        this.server.listChats();
+        String chat = this.scanner.nextLine();
+
+        String[] users = chat.split("-", 2);
+        String user1 = users[0].trim();
+        String user2 = users[1].trim();
+
+        this.server.auditChat(user1, user2);
     }
 
 }
