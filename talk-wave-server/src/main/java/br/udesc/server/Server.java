@@ -66,14 +66,24 @@ public class Server {
         }
     }
 
-    private void sendMessage(Message message) throws IOException {
-        List<String> recipientNames = message.getRecipients();
-        List<User> recipients = recipientNames.stream().map(this::findUser).toList();
-        recipients.forEach(user -> {
-            System.out.println(MessageFormat.format("MENSAGEM DE {0} PARA {1}", message.getSender(), user.getName()));
-        });
+    private void sendMessage(Message message) {
+        List<User> recipients;
 
-        recipients.forEach(user -> {
+        List<String> recipientNames = message.getRecipients();
+        if (recipientNames == null) {
+            recipients = this.users.stream()
+                    .filter(user -> !user.equals(this.findUser(message.getSender())))
+                    .toList();
+        } else {
+            recipients = recipientNames.stream().map(this::findUser).toList();
+        }
+
+        for (User user : recipients) {
+            if (user == null) {
+                continue;
+            }
+
+            System.out.println(MessageFormat.format("MENSAGEM DE {0} PARA {1}", message.getSender(), user.getName()));
             this.threadPool.execute(() -> {
                 try {
                     PrintStream output = new PrintStream(user.getSocket().getOutputStream());
@@ -83,14 +93,14 @@ public class Server {
                     throw new RuntimeException(e);
                 }
             });
-        });
+        }
     }
 
     private User findUser(String userName) {
         return this.users.stream()
                 .filter(u -> u.getName().equals(userName))
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
     private void listUsers(Message messageToProcess) throws IOException {
