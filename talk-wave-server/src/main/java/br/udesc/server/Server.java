@@ -68,16 +68,22 @@ public class Server {
 
     private void sendMessage(Message message) throws IOException {
         System.out.println(MessageFormat.format("MENSAGEM DE {0} PARA {1}", message.getSender(), message.getRecipient()));
-        User recipient = this.users.stream().filter(u -> u.getName().equals(message.getRecipient())).findFirst().get();
-        String jsonMessage = new Gson().toJson(message);
+        User recipient = this.findUser(message.getRecipient());
         PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
+        String jsonMessage = new Gson().toJson(message);
         output.println(jsonMessage);
     }
 
-    private void listUsers(Message messageToProcess) throws IOException {
-        User recipient = this.users.stream().filter(u -> u.getName().equals(messageToProcess.getRecipient())).findFirst().get();
+    private User findUser(String userName) {
+        return this.users.stream()
+                .filter(u -> u.getName().equals(userName))
+                .findFirst()
+                .get();
+    }
 
-        System.out.println("LISTANDO USUÁRIO PARA -> " + recipient.getName());
+    private void listUsers(Message messageToProcess) throws IOException {
+        User recipient = this.findUser(messageToProcess.getRecipient());
+        System.out.println("LISTANDO USUÁRIO PARA -> " + messageToProcess.getRecipient());
 
         List<String> list = this.users
                 .stream()
@@ -92,9 +98,10 @@ public class Server {
     }
 
     private void closeConnection(Message message) throws IOException {
-        User sender = this.users.stream().filter(u -> u.getName().equals(message.getSender())).findFirst().get();
+        System.out.println("REMOVENDO USUÁRIO: " + message.getSender());
+
+        User sender = this.findUser(message.getSender());
         sender.getSocket().close();
-        System.out.println("REMOVENDO USUÁRIO: " + sender.getName());
         this.users.remove(sender);
 
         this.users.forEach(user -> {
