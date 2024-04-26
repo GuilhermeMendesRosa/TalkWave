@@ -7,7 +7,8 @@ public enum Command {
     SEND_FILE("file"),
     SEND_MESSAGE("message"),
     USERS("users"),
-    EXIT("sair");
+    EXIT("sair"),
+    BANNED("banned");
 
     private final String command;
 

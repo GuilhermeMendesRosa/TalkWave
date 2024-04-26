@@ -24,7 +24,25 @@ public class Server {
         System.out.println("SERVIDOR INICIANDO");
         this.server = new ServerSocket(port);
         this.users = Collections.synchronizedSet(new TreeSet<>());
+        this.startAuditMode();
         this.acceptConnections();
+    }
+
+    public List<User> listUsers() {
+        return this.users.stream().toList();
+    }
+
+    public void banUser(String userToBan) throws IOException {
+        User user = this.findUser(userToBan);
+        this.sendBanned(user);
+        this.removeUser(user);
+    }
+
+
+
+    private void removeUser(User userToRemove) throws IOException {
+        userToRemove.getSocket().close();
+        this.users.remove(userToRemove);
     }
 
     private void acceptConnections() throws IOException {
@@ -58,7 +76,7 @@ public class Server {
                 this.sendMessage(message);
             }
             case USERS -> {
-                this.listUsers(message);
+                this.sendUsers(message);
             }
             case EXIT -> {
                 this.closeConnection(message);
@@ -96,14 +114,7 @@ public class Server {
         }
     }
 
-    private User findUser(String userName) {
-        return this.users.stream()
-                .filter(u -> u.getName().equals(userName))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private void listUsers(Message messageToProcess) throws IOException {
+    private void sendUsers(Message messageToProcess) throws IOException {
         User recipient = this.findUser(messageToProcess.getRecipients().get(0));
         System.out.println("LISTANDO USUÁRIO PARA -> " + recipient.getName());
 
@@ -119,12 +130,27 @@ public class Server {
         output.println(jsonMessage);
     }
 
+    private void sendBanned(User userToBan) throws IOException {
+        System.out.println("BANINDO USUÁRIO " + userToBan.getName());
+
+        Message messageToSend = new Message("", Collections.singletonList(userToBan.getName()), "", Command.BANNED);
+        String jsonMessage = new Gson().toJson(messageToSend);
+        PrintStream output = new PrintStream(userToBan.getSocket().getOutputStream());
+        output.println(jsonMessage);
+    }
+
+    private User findUser(String userName) {
+        return this.users.stream()
+                .filter(u -> u.getName().equals(userName))
+                .findFirst()
+                .orElse(null);
+    }
+
     private void closeConnection(Message message) throws IOException {
         System.out.println("REMOVENDO USUÁRIO: " + message.getSender());
 
-        User sender = this.findUser(message.getSender());
-        sender.getSocket().close();
-        this.users.remove(sender);
+        User userToRemove = this.findUser(message.getSender());
+        this.removeUser(userToRemove);
 
         this.users.forEach(user -> {
             threadPool.execute(() -> {
@@ -139,4 +165,7 @@ public class Server {
         });
     }
 
+    private void startAuditMode() {
+        new Thread(new AuditMode(this)).start();
+    }
 }
