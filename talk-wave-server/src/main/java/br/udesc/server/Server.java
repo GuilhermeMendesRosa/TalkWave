@@ -110,10 +110,10 @@ public class Server {
 
     private void saveFile(Message message) {
         try {
-            byte[] bytesArquivo = Base64.getDecoder().decode(message.getFile().getBase64());
+            byte[] fileBytes = Base64.getDecoder().decode(message.getFile().getBase64());
 
             FileOutputStream fileOutputStream = new FileOutputStream(message.getFile().getFileName());
-            fileOutputStream.write(bytesArquivo);
+            fileOutputStream.write(fileBytes);
             fileOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
