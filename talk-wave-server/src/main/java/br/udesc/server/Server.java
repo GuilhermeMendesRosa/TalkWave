@@ -6,6 +6,7 @@ import br.udesc.model.Message;
 import br.udesc.model.User;
 import com.google.gson.Gson;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
@@ -85,7 +86,7 @@ public class Server {
                         this.processMessage(input.nextLine());
                     }
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    System.out.println("Erro desconhecido ao processar mensagem: " + e.getMessage());
                 }
             });
         }
@@ -99,18 +100,25 @@ public class Server {
     private void processMessage(String jsonMessage) throws IOException {
         Message message = new Gson().fromJson(jsonMessage, Message.class);
         switch (message.getCommand()) {
-            case SEND_MESSAGE -> {
-                this.sendMessage(message);
-            }
-            case USERS -> {
-                this.sendUsers(message);
-            }
-            case EXIT -> {
-                this.closeConnection(message);
-            }
+            case SEND_MESSAGE -> this.sendMessage(message);
+            case USERS -> this.sendUsers(message);
+            case SEND_FILE -> this.saveFile(message);
+            case EXIT -> this.closeConnection(message);
+            default -> System.out.println("Comando inválido");
         }
     }
 
+    private void saveFile(Message message) {
+        try {
+            byte[] bytesArquivo = Base64.getDecoder().decode(message.getFile().getBase64());
+
+            FileOutputStream fileOutputStream = new FileOutputStream(message.getFile().getFileName());
+            fileOutputStream.write(bytesArquivo);
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void sendMessage(Message message) {
         List<User> recipients;
 

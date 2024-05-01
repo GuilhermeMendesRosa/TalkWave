@@ -12,6 +12,7 @@ public class Message {
     private String content;
     private Command command;
     private Date sendDate;
+    private FileDTO file;
 
     public Message(String sender, Command command) {
         this.sender = sender;
@@ -68,6 +69,14 @@ public class Message {
 
     public void setSendDate(Date sendDate) {
         this.sendDate = sendDate;
+    }
+
+    public FileDTO getFile() {
+        return file;
+    }
+
+    public void setFile(FileDTO file) {
+        this.file = file;
     }
 
 }
