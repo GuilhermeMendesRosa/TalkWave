@@ -85,7 +85,7 @@ public class Server {
                         this.processMessage(input.nextLine());
                     }
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    System.out.println("Erro desconhecido ao processar mensagem: " + e.getMessage());
                 }
             });
         }
@@ -99,31 +99,16 @@ public class Server {
     private void processMessage(String jsonMessage) throws IOException {
         Message message = new Gson().fromJson(jsonMessage, Message.class);
         switch (message.getCommand()) {
-            case SEND_MESSAGE -> {
-                this.sendMessage(message);
-            }
-            case USERS -> {
-                this.sendUsers(message);
-            }
-            case EXIT -> {
-                this.closeConnection(message);
-            }
+            case SEND_MESSAGE, SEND_FILE -> this.send(message);
+            case USERS -> this.sendUsers(message);
+            case EXIT -> this.closeConnection(message);
+            default -> System.out.println("Comando inválido");
         }
     }
 
-    private void sendMessage(Message message) {
-        List<User> recipients;
-
-        List<String> recipientNames = message.getRecipients();
-        if (recipientNames == null) {
-            recipients = this.users.stream()
-                    .filter(user -> !user.equals(this.findUser(message.getSender())))
-                    .toList();
-
-            message.setRecipients(recipients.stream().map(User::getName).toList());
-        } else {
-            recipients = recipientNames.stream().map(this::findUser).toList();
-        }
+    private void send(Message message) {
+        List<User> recipients = message.getRecipients()
+                .stream().map(this::findUser).toList();
 
         this.storeMessage(message);
         for (User recipient : recipients) {
@@ -132,15 +117,17 @@ public class Server {
             }
 
             System.out.println(MessageFormat.format("MENSAGEM DE {0} PARA {1}", message.getSender(), recipient.getName()));
-            this.threadPool.execute(() -> {
-                try {
-                    PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
-                    String jsonMessage = new Gson().toJson(message);
-                    output.println(jsonMessage);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            this.threadPool.execute(() -> dispatch(message, recipient));
+        }
+    }
+
+    private void dispatch(Message message, User recipient) {
+        try {
+            PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
+            String jsonMessage = new Gson().toJson(message);
+            output.println(jsonMessage);
+        } catch (Exception e) {
+            System.out.println("Erro ao enviar mensagem para " + recipient.getName() + ": " + e.getMessage());
         }
     }
 
