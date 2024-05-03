@@ -1,6 +1,7 @@
 package br.udesc.server;
 
 import br.udesc.enums.Command;
+import br.udesc.model.BusinessException;
 import br.udesc.model.Key;
 import br.udesc.model.Message;
 import br.udesc.model.User;
@@ -38,6 +39,8 @@ public class Server {
 
     public void banUser(String userToBan) throws IOException {
         User user = this.findUser(userToBan);
+        if (user == null) throw new BusinessException("Usuário não encontrado. Verifique o nome e tente novamente.");
+
         this.sendBanned(user);
         this.removeUser(user);
     }
