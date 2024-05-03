@@ -1,5 +1,6 @@
 package br.udesc.server;
 
+import br.udesc.model.BusinessException;
 import br.udesc.model.User;
 
 import java.util.List;
@@ -61,8 +62,8 @@ public class Auditor implements Runnable {
 
     private void showUsers() {
         List<User> users = this.server.listUsers();
+        System.out.println("----------Usuários----------");
         for (User user : users) {
-            System.out.println("----------Usuários----------");
             System.out.println(user.getName());
         }
     }
@@ -72,8 +73,10 @@ public class Auditor implements Runnable {
             System.out.print("Qual usuário deseja banir? ");
             String userToBan = this.scanner.nextLine();
             this.server.banUser(userToBan);
+        } catch (BusinessException e) {
+            System.out.println(e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println("Erro desconhecido ao banir usuário. Tente novamente.");
         }
     }
 
