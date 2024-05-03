@@ -24,7 +24,11 @@ java -jar target/talk-wave-client-1.0-SNAPSHOT.jar
 
 2. Executar o cliente:
 ```bash
-cd ./../talk-wave-client
+cd ./talk-wave-client
 mvn clean package
 java -jar target/talk-wave-client-1.0-SNAPSHOT.jar
 ```
+
+### Repositórios Git:
+- [Servidor](https://github.com/GuilhermeMendesRosa/TalkWave)
+- [Cliente](https://github.com/jpdev01/talk-wave-client)
