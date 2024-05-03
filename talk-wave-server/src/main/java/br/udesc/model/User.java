@@ -13,6 +13,7 @@ public class User implements Comparable<User>{
     public User(String name, Socket socket) {
         this.name = name;
         this.socket = socket;
+        this.activeAt = System.currentTimeMillis();
     }
 
     public String getName() {
