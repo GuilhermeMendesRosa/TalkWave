@@ -22,6 +22,7 @@ public class Server {
     private Set<User> users;
     private ExecutorService threadPool;
     public Map<Key, List<Message>> messagesStorage;
+    private ConnectionAuditor connectionAuditor = new ConnectionAuditor();;
 
     public void startServer(int port) throws IOException {
         System.out.println("SERVIDOR INICIANDO");
@@ -96,6 +97,7 @@ public class Server {
 
     private void registerUser(String userName, Socket clientSocket) {
         this.users.add(new User(userName, clientSocket));
+        connectionAuditor.audit(clientSocket.getInetAddress().getHostAddress(), userName);
         System.out.println("Usuário conectado: " + userName + " - Socket: " + clientSocket);
     }
 
