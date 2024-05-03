@@ -29,6 +29,22 @@ mvn clean package
 java -jar target/talk-wave-client-1.0-SNAPSHOT.jar
 ```
 
+
+## Funcionalidades
+- [x] Envio de mensagens:
+  - [x] `/send message <destino> <message>`
+- [x] Envio de arquivos
+  - [x] `/send file <destino> <message>`
+
+- [x] Listagem de usuários
+  - [x] `/users`
+- [x] Sair
+  - [x] `/sair`
+- [x] Última atividade de cada usuário
+
+- [x] Administrador: Banir, listar usuários, auditar mensagens
+  - [x] `#audit`
+
 ### Repositórios Git:
 - [Servidor](https://github.com/GuilhermeMendesRosa/TalkWave)
 - [Cliente](https://github.com/jpdev01/talk-wave-client)
