@@ -62,8 +62,8 @@ public class Auditor implements Runnable {
 
     private void showUsers() {
         List<User> users = this.server.listUsers();
+        System.out.println("----------Usuários----------");
         for (User user : users) {
-            System.out.println("----------Usuários----------");
             System.out.println(user.getName());
         }
     }
