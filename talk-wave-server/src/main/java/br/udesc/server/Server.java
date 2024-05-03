@@ -15,6 +15,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Server {
 
@@ -103,6 +104,10 @@ public class Server {
 
     private void processMessage(String jsonMessage) throws IOException {
         Message message = new Gson().fromJson(jsonMessage, Message.class);
+
+        User sender = this.findUser(message.getSender());
+        sender.setActiveAt(new Date().getTime());
+
         switch (message.getCommand()) {
             case SEND_MESSAGE, SEND_FILE -> this.send(message);
             case USERS -> this.sendUsers(message);
@@ -155,12 +160,12 @@ public class Server {
     }
 
     private void sendUsers(Message messageToProcess) throws IOException {
-        User recipient = this.findUser(messageToProcess.getRecipients().get(0));
+        User recipient = this.findUser(messageToProcess.getSender());
         System.out.println("LISTANDO USUÁRIO PARA -> " + recipient.getName());
 
         List<String> list = this.users
                 .stream()
-                .map(User::getName)
+                .map(this::getUserDescription)
                 .toList();
         String jsonList = new Gson().toJson(list);
 
@@ -168,6 +173,13 @@ public class Server {
         String jsonMessage = new Gson().toJson(messageToSend);
         PrintStream output = new PrintStream(recipient.getSocket().getOutputStream());
         output.println(jsonMessage);
+    }
+
+    private String getUserDescription(User user) {
+        String response = user.getName();
+        if (user.getActiveAt() != null) response += " - " + user.getStatusDescription();
+
+        return response;
     }
 
     private void sendBanned(User userToBan) throws IOException {
