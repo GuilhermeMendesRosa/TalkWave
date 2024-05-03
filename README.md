@@ -35,7 +35,7 @@ java -jar target/talk-wave-client-1.0-SNAPSHOT.jar
   - [x] `/send message <destino> <message>`
   - [x] `/send message to:<destino1>,<destino2> <message>`
 - [x] Envio de arquivos
-  - [x] `/send file <destino> <message>`
+  - [x] `/send file <destino> <path>`
 
 - [x] Listagem de usuários
   - [x] `/users`
