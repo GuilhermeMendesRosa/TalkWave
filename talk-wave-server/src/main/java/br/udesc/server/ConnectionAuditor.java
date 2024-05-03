@@ -42,7 +42,7 @@ public class ConnectionAuditor {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.append(ip)
                     .append(SEPARATOR)
-                    .append(timestamp.toString())
+                    .append(timestamp)
                     .append(SEPARATOR)
                     .append(userId)
                     .append('\n');
