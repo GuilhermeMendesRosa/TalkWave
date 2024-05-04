@@ -45,6 +45,7 @@ java -jar target/talk-wave-client-1.0-SNAPSHOT.jar
 
 - [x] Administrador: Banir, listar usuários, auditar mensagens
   - [x] `#audit`
+- [x] Banimento de usuários inativos (com aviso prévio)
 
 ### Repositórios Git:
 - [Servidor](https://github.com/GuilhermeMendesRosa/TalkWave)
