@@ -5,12 +5,12 @@ import br.udesc.model.User;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class ClientActiviyCheck {
+public class ClientCheckInactivity {
 
     private final Server server;
     private final ArrayList<User> warnedUserList = new ArrayList<>();
 
-    public ClientActiviyCheck(Server server) {
+    public ClientCheckInactivity(Server server) {
         this.server = server;
     }
 

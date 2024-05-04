@@ -15,7 +15,6 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Server {
 
@@ -30,7 +29,7 @@ public class Server {
         this.server = new ServerSocket(port);
         this.users = Collections.synchronizedSet(new TreeSet<>());
         this.messagesStorage = Collections.synchronizedMap(new HashMap<Key, List<Message>>());
-        new ClientActiviyCheck(this).start();
+        new ClientCheckInactivity(this).start();
 
         this.startAuditMode();
         this.acceptConnections();
