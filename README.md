@@ -4,6 +4,10 @@ O TalkWave é um aplicativo de mensagens desenvolvido em Java que permite comuni
 
 Este projeto foi desenvolvido como parte do curso de TADS da UDESC, na disciplina de Dispostivos Móveis 2024/1.
 
+### Projetos:
+- [Servidor](https://github.com/GuilhermeMendesRosa/TalkWave)
+- [Cliente](https://github.com/jpdev01/talk-wave-client)
+- 
 ## Tecnologias Utilizadas
 - ☕ Java 17
 - 🌐 Sockets
@@ -46,7 +50,3 @@ java -jar target/talk-wave-client-1.0-SNAPSHOT.jar
 - [x] Administrador: Banir, listar usuários, auditar mensagens
   - [x] `#audit`
 - [x] Banimento de usuários inativos (com aviso prévio)
-
-### Repositórios Git:
-- [Servidor](https://github.com/GuilhermeMendesRosa/TalkWave)
-- [Cliente](https://github.com/jpdev01/talk-wave-client)
