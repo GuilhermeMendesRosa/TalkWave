@@ -15,7 +15,6 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Server {
 
@@ -23,13 +22,14 @@ public class Server {
     private Set<User> users;
     private ExecutorService threadPool;
     public Map<Key, List<Message>> messagesStorage;
-    private ConnectionAuditor connectionAuditor = new ConnectionAuditor();;
+    private ConnectionAuditor connectionAuditor = new ConnectionAuditor();
 
     public void startServer(int port) throws IOException {
         System.out.println("SERVIDOR INICIANDO");
         this.server = new ServerSocket(port);
         this.users = Collections.synchronizedSet(new TreeSet<>());
         this.messagesStorage = Collections.synchronizedMap(new HashMap<Key, List<Message>>());
+        new ClientCheckInactivity(this).start();
 
         this.startAuditMode();
         this.acceptConnections();
@@ -70,6 +70,11 @@ public class Server {
         messages.stream()
                 .sorted(Comparator.comparing(Message::getSendDate))
                 .forEach(message -> System.out.println(message.getSender() + ": " + message.getContent()));
+    }
+
+    public void sendAdminMessage(User user, String messageText) {
+        Message message = new Message("Admin", Collections.singletonList(user.getName()), messageText, Command.SEND_MESSAGE);
+        this.dispatch(message, user);
     }
 
     private void removeUser(User userToRemove) throws IOException {
